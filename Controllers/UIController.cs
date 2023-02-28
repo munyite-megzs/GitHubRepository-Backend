@@ -55,7 +55,7 @@ namespace GitRepositoryTracker.Controllers
         {
             if (string.IsNullOrEmpty(topicName))
             {
-                return BadRequest("Topic parameter is required");
+                return BadRequest("TopicDto parameter is required");
             }
 
             var repositories = await _uIGenericRepository.GetAllByTopic(topicName);

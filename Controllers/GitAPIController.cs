@@ -1,4 +1,5 @@
-﻿using GitRepositoryTracker.DButil;
+﻿using AutoMapper;
+using GitRepositoryTracker.DTO;
 using GitRepositoryTracker.Interfaces;
 using GitRepositoryTracker.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,33 +11,41 @@ namespace GitRepositoryTracker.Controllers
     public class GitAPIController: ControllerBase
     {
         private readonly IGitAPIRepository _gitAPIRepository;
+        private readonly IMapper _mapper;
 
-        public GitAPIController (IGitAPIRepository gitAPIRepository)
+        public GitAPIController (IGitAPIRepository gitAPIRepository, IMapper mapper)
         {
             _gitAPIRepository = gitAPIRepository;
+            _mapper = mapper;
         }
 
         [HttpPost("repository")]
-        public async Task<ActionResult> AddRepository(Repository repository)
+        public async Task<ActionResult<RepositoryDto>> AddRepository(RepositoryDto repositoryDto)
         {
-            if (repository == null)
+            if (repositoryDto == null)
             {
                 return BadRequest("No repository provided");
             }
+
+            var repository = _mapper.Map<Repository>(repositoryDto);
+
             await _gitAPIRepository.AddRepository(repository);
 
-            return Ok();
+            return Ok(repository.RepositoryId);
         }
         [HttpPost("topic")]
-        public async Task<ActionResult> AddTopic(Topic topic)
+        public async Task<ActionResult<TopicDto>> AddTopic(TopicDto topicDto)
         {
-            if (topic == null)
+         
+            if (topicDto == null)
             {
                 return BadRequest("No topic provided");
             }
+            var topic = _mapper.Map<Topic>(topicDto);
+
             await _gitAPIRepository.AddTopic(topic);
 
-            return Ok();
+            return Ok(topic.TopicId);
         }
 
 

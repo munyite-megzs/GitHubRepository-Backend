@@ -44,7 +44,7 @@ namespace GitRepositoryTracker.DButil
                 .IsUnique();
 
             //seeddata
-            modelBuilder.Seed();
+            //modelBuilder.Seed();
 
             base.OnModelCreating(modelBuilder);
 

@@ -34,7 +34,7 @@ namespace GitRepositoryTracker.Data
                 new Repository
                 {
                     RepositoryId="MGEwOlJlcG9zaXRvcnkyODQ1NzgyMz==",
-                    RepositoryName = "Example Repository 1",
+                    RepositoryName = "Example RepositoryDto 1",
                     Description = "This is an example repository",
                     Url = "https://github.com/example/repository1",
                     language = "C#",
@@ -47,7 +47,7 @@ namespace GitRepositoryTracker.Data
                 new Repository
                 {
                     RepositoryId="MGFyOlJlcG9zaXRvcnkyODQ1NzgyMt==",
-                    RepositoryName = "Example Repository 2",
+                    RepositoryName = "Example RepositoryDto 2",
                     Description = "This is another example repository",
                     Url = "https://github.com/example/repository2",
                     language = "python",
