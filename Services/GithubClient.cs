@@ -28,14 +28,14 @@ namespace GitRepositoryTracker.Services
                 
 
         }
-        public async Task<IEnumerable<Octokit.Repository>> GetAllRepositoriesBySize(int count)
+        public async Task<IEnumerable<Octokit.Repository>> GetAllRepositoriesBySize(int count, int page, int perPage)
         {
             //throw new NotImplementedException(); 
             const int pageSize = 100;
             var repositories = new List<Models.Repository>();
 
             // Keep fetching repositories until we have enough
-            for (int page = 1; repositories.Count < count; page++)
+            for (int pg = 1; repositories.Count < count; pg++)
             {
                 var searchRequest = new SearchRepositoriesRequest
                 {
@@ -64,7 +64,7 @@ namespace GitRepositoryTracker.Services
             }
 
 
-            //return repositories.Take(count);
+            return (IEnumerable<Octokit.Repository>)repositories.Take(count);
         }
 
         public Task<IEnumerable<Octokit.Repository>> GetAllRepositoriesByLanguage(string language, int page, int perPage)
