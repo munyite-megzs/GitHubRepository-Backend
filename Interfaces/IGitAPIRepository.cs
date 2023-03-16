@@ -13,4 +13,3 @@ namespace GitRepositoryTracker.Interfaces
 
     }
 }
-7
