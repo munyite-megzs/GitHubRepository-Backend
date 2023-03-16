@@ -9,6 +9,6 @@ namespace GitRepositoryTracker.Models
 
         public int TopicId { get; set; }
         public string TopicName { get; set; }
-        public ICollection<RepositoryTopic> RepositoryTopics { get; set; }
+        public ICollection<RepositoryTopic> RepositoryTopics { get; set; } = new List<RepositoryTopic>();
     }
 }

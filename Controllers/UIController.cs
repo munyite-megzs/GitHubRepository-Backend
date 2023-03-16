@@ -1,4 +1,6 @@
-﻿using GitRepositoryTracker.Interfaces;
+﻿using AutoMapper;
+using GitRepositoryTracker.DTO;
+using GitRepositoryTracker.Interfaces;
 using GitRepositoryTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,13 +8,15 @@ namespace GitRepositoryTracker.Controllers
 {
     [ApiController]
     [Route("api/GitRepoTrackerAPI")]
-    public class UIController: ControllerBase
+    public class UIController : ControllerBase
     {
         private readonly IUIGenericRepository _uIGenericRepository;
+        private readonly IMapper _mapper;
 
-        public UIController(IUIGenericRepository uIGenericRepository)
+        public UIController(IUIGenericRepository uIGenericRepository, IMapper mapper)
         {
             _uIGenericRepository = uIGenericRepository;
+            _mapper = mapper;
         }
 
 
@@ -51,7 +55,7 @@ namespace GitRepositoryTracker.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Repository>>> GetAllByTopic(string topicName)
+        public async Task<ActionResult<IEnumerable<RepositoryDto>>> GetAllByTopic(string topicName)
         {
             if (string.IsNullOrEmpty(topicName))
             {
@@ -60,11 +64,10 @@ namespace GitRepositoryTracker.Controllers
 
             var repositories = await _uIGenericRepository.GetAllByTopic(topicName);
 
-            if (repositories==null || !repositories.Any())
+            if (repositories == null || !repositories.Any())
             {
                 return NotFound();
-            }            
-
+            }
             return Ok(repositories);
         }
 
@@ -76,11 +79,11 @@ namespace GitRepositoryTracker.Controllers
         {
 
             var repositories = await _uIGenericRepository.GetAllByForks();
-            if (repositories==null || !repositories.Any())
+            if (repositories == null || !repositories.Any())
             {
                 return NotFound();
             }
-  
+
 
             return Ok(repositories);
 
@@ -91,7 +94,7 @@ namespace GitRepositoryTracker.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Repository>>> GetAllByNumberOfStars()
         {
-  
+
             var repositories = await _uIGenericRepository.GetAllByStars();
             if (repositories == null || !repositories.Any())
             {

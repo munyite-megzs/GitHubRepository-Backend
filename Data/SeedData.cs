@@ -1,6 +1,4 @@
-﻿using GitRepositoryTracker.DButil;
-using GitRepositoryTracker.Models;
-using Microsoft.AspNetCore.Http;
+﻿using GitRepositoryTracker.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GitRepositoryTracker.Data
@@ -22,9 +20,9 @@ namespace GitRepositoryTracker.Data
                 new Topic { TopicId = -7,TopicName = "curriculum"},
                 new Topic { TopicId = -8,TopicName = "education" },
                 new Topic { TopicId = -9,TopicName = "freecodecamp"},
-                new Topic { TopicId = -10,TopicName = "hacktoberfest" },               
+                new Topic { TopicId = -10,TopicName = "hacktoberfest" },
                 new Topic { TopicId = -12,TopicName = "learn-to-code" }
-                
+
             };
             modelBuilder.Entity<Topic>().HasData(topics);
 
@@ -37,7 +35,7 @@ namespace GitRepositoryTracker.Data
                     RepositoryName = "Example RepositoryDto 1",
                     Description = "This is an example repository",
                     Url = "https://github.com/example/repository1",
-                    language = "C#",
+                    Language = "C#",
                     StargazersCount = 10,
                     ForksCount = 2,
                     CreatedAt = new DateTime(2022, 1, 1),
@@ -50,7 +48,7 @@ namespace GitRepositoryTracker.Data
                     RepositoryName = "Example RepositoryDto 2",
                     Description = "This is another example repository",
                     Url = "https://github.com/example/repository2",
-                    language = "python",
+                    Language = "python",
                     StargazersCount = 5,
                     ForksCount = 1,
                     CreatedAt = new DateTime(2022, 1, 1),
