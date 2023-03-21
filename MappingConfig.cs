@@ -12,6 +12,9 @@ namespace GitRepositoryTracker
             CreateMap<Topic, TopicDto>().ReverseMap();
             CreateMap<RepositoryTopic, RepositoryTopicDto>().ReverseMap();
             CreateMap<Language, LanguageDto>().ReverseMap();
+            CreateMap<RepositoryTopic, RepositoryTopicDto>()
+                .ForMember(dest => dest.TopicName, opt => opt.MapFrom(src => src.Topic.TopicName)) // Add this line
+                .ReverseMap();
 
             CreateMap<DateTimeOffset, DateTime>().ConvertUsing(dto => dto.UtcDateTime);
 
