@@ -8,6 +8,7 @@ namespace GitRepositoryTracker.DButil
     {
         public DbSet<Repository> Repositories { get; set; }
         public DbSet<Topic> Topics { get; set; }
+        public DbSet<Language> Languages { get; set; }
         public DbSet<RepositoryTopic> RepositoryTopics { get; set; }
 
 
@@ -42,18 +43,21 @@ namespace GitRepositoryTracker.DButil
             modelBuilder.Entity<Topic>()
                 .HasIndex(t => t.TopicName)
                 .IsUnique();
+            modelBuilder.Entity<Repository>()
+                .HasOne(r => r.Language)
+                .WithMany(l => l.Repositories)
+                .HasForeignKey(r => r.LanguageId);
+            modelBuilder.Entity<Language>()
+                .Property(l => l.LanguageId)
+                .ValueGeneratedOnAdd();
 
-            //seeddata
-            modelBuilder.Seed();
+    
 
             base.OnModelCreating(modelBuilder);
 
 
         }
-        //    public void Initialize()
-        //    {
-        //        SeedData.Initialize(this);
-        //    }
+
     }
 
 

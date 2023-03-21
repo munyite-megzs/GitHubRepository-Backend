@@ -139,5 +139,20 @@ namespace GitRepositoryTracker.Controllers
 
             return Ok(topics);
         }
+
+        [HttpGet("all-languages")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllLanguages()
+        {
+
+            var languages = await _uIGenericRepository.GetAllLanguagesAsync();
+            if (languages == null || !languages.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(languages);
+        }
     }
 }

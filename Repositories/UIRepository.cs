@@ -36,7 +36,8 @@ namespace GitRepositoryTracker.Repositories
         public async Task<IEnumerable<RepositoryDto>> GetAllByLanguage(string language)
         {
             var result = await _context.Repositories
-                .Where(rep => rep.Language == language)
+                .Include(l=>l.Language)
+                .Where(rep => rep.Language.LanguageName == language)
                 .ProjectTo<RepositoryDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
             return result;
@@ -60,6 +61,13 @@ namespace GitRepositoryTracker.Repositories
                 .ToListAsync();
 
             return repositories;
+        }
+
+        public async Task<IEnumerable<LanguageDto>> GetAllLanguagesAsync()
+        {
+            return await _context.Languages
+                .ProjectTo<LanguageDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<RepositoryDto>> GetAllRepositories()

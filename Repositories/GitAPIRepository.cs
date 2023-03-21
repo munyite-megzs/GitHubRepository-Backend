@@ -35,18 +35,16 @@ namespace GitRepositoryTracker.Repositories
             await _context.SaveChangesAsync();
         }
         public async Task AddRepositories(IEnumerable<Octokit.Repository> repositories)
-        {
+        {       
+
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-
                 foreach (var repository in repositories)
                 {
                     var repodto = _mapper.Map<RepositoryDto>(repository);
                     var repoentity = _mapper.Map<Models.Repository>(repodto);
-                    // Set a default value for the Language property if it is null
-                    repoentity.Language ??= "None";
 
                     var repoInDb = await _context.Repositories.FirstOrDefaultAsync(r => r.RepositoryId == repoentity.RepositoryId);
 
@@ -56,19 +54,38 @@ namespace GitRepositoryTracker.Repositories
                         continue;
                     }
 
+                    // Add new language to database
+                    var languageName = repository.Language ?? "None";
+                    var languageEntity = await _context.Languages
+                        .FirstOrDefaultAsync(l => l.LanguageName == languageName);
+
+                    if (languageEntity == null)
+                    {
+                        languageEntity = new Language
+                        {
+                            LanguageName = languageName
+                        };
+
+                        _context.Languages.Add(languageEntity);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    repoentity.Language = languageEntity;
+
                     // Add new repository to database
                     _context.Repositories.Add(repoentity);
                     await _context.SaveChangesAsync();
 
-                    var topicDtos = repository.Topics?.Select(topic => topic ?? "None").Select(topic => new Topic
-                    {
-                        TopicName = topic
-                    }).Distinct().ToList();
+                    // Add topics to database
+                    var topicDtos = repository.Topics?.Select(topic => topic ?? "None")
+                        .Select(topic => new TopicDto { TopicName = topic })
+                        .Distinct().ToList();
                     var topicEntities = _mapper.Map<IEnumerable<Topic>>(topicDtos);
 
                     foreach (var topicEntity in topicEntities)
                     {
-                        var existingTopic = await _context.Topics.FirstOrDefaultAsync(t => t.TopicName == topicEntity.TopicName);
+                        var existingTopic = await _context.Topics
+                            .FirstOrDefaultAsync(t => t.TopicName == topicEntity.TopicName);
 
                         if (existingTopic != null)
                         {
@@ -80,7 +97,8 @@ namespace GitRepositoryTracker.Repositories
                             await _context.SaveChangesAsync();
                         }
 
-                        var existingRepositoryTopic = await _context.RepositoryTopics.FirstOrDefaultAsync(rt => rt.TopicId == topicEntity.TopicId && rt.RepositoryId == repoentity.RepositoryId);
+                        var existingRepositoryTopic = await _context.RepositoryTopics
+                            .FirstOrDefaultAsync(rt => rt.TopicId == topicEntity.TopicId && rt.RepositoryId == repoentity.RepositoryId);
 
                         if (existingRepositoryTopic == null)
                         {
@@ -105,10 +123,7 @@ namespace GitRepositoryTracker.Repositories
                 Debug.WriteLine("An error occurred while adding repositories to the database.", ex.Message);
                 throw;
             }
-
-
         }
-
 
         public async Task<Models.Repository> GetRepositoryById(string id)
         {
@@ -122,5 +137,10 @@ namespace GitRepositoryTracker.Repositories
             return await _context.Topics.FindAsync(id);
         }
 
+        public async Task AddLanguage(Language language)
+        {
+            await _context.AddAsync(language);
+            await _context.SaveChangesAsync();
+        }
     }
 }

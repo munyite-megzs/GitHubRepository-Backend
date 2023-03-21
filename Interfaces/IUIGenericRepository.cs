@@ -12,6 +12,7 @@ namespace GitRepositoryTracker.Interfaces
         Task<IEnumerable<RepositoryDto>> GetAllByDate();
         Task<IEnumerable<RepositoryDto>> GetAllRepositories();
         Task<IEnumerable<TopicDto>> GetAllTopicsAsync();
+        Task<IEnumerable<LanguageDto>> GetAllLanguagesAsync();
 
     }
 }
