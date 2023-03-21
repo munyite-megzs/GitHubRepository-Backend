@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using GitRepositoryTracker.DTO;
 using GitRepositoryTracker.Interfaces;
-using GitRepositoryTracker.Models;
+using GitRepositoryTracker.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GitRepositoryTracker.Controllers
@@ -23,31 +23,33 @@ namespace GitRepositoryTracker.Controllers
         [HttpGet("all-repositories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllRepostories()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllRepostories([FromQuery]int pageNumber=1, [FromQuery]int pageSize=10)
         {
 
-            var repositories = await _uIGenericRepository.GetAllRepositories();
+            var repositories = await _uIGenericRepository.GetAllRepositoriesAsync(pageNumber,pageSize);
             if (repositories == null || !repositories.Any())
             {
                 return NotFound();
             }
 
-            return Ok(repositories);
+            return Ok(new PaginatedResponse<RepositoryDto>(repositories));
         }
 
         [HttpGet("by-updated-at")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllByUpdatedAt()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByUpdatedAt([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
-            var repositories = await _uIGenericRepository.GetAllByDate();
+            var repositories = await _uIGenericRepository.GetAllByDateAsync(pageNumber, pageSize);
             if (repositories == null || !repositories.Any())
             {
                 return NotFound();
             }
 
-            return Ok(repositories);
+            return Ok(new PaginatedResponse<RepositoryDto>(repositories));
         }
 
 
@@ -55,53 +57,52 @@ namespace GitRepositoryTracker.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<RepositoryDto>>> GetAllByTopic(string topicName)
+        public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByTopic(string topicName, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (string.IsNullOrEmpty(topicName))
             {
                 return BadRequest("TopicDto parameter is required");
             }
 
-            var repositories = await _uIGenericRepository.GetAllByTopic(topicName);
+            var repositories = await _uIGenericRepository.GetAllByTopicAsync(topicName,pageNumber,pageSize);
 
             if (repositories == null || !repositories.Any())
             {
                 return NotFound();
             }
-            return Ok(repositories);
+            return Ok(new PaginatedResponse<RepositoryDto>(repositories));
         }
 
         [HttpGet("by-forks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Repository>>> GetAllByNumberOfForks()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByNumberOfForks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
-            var repositories = await _uIGenericRepository.GetAllByForks();
+            var repositories = await _uIGenericRepository.GetAllByForksAsync(pageNumber,pageSize);
             if (repositories == null || !repositories.Any())
             {
                 return NotFound();
             }
 
+            return Ok(new PaginatedResponse<RepositoryDto>(repositories));
 
-            return Ok(repositories);
-
-        }
+        }  
 
         [HttpGet("by-stars")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Repository>>> GetAllByNumberOfStars()
+        public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByNumberOfStars([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
-            var repositories = await _uIGenericRepository.GetAllByStars();
+            var repositories = await _uIGenericRepository.GetAllByStarsAsync(pageNumber,pageSize);
             if (repositories == null || !repositories.Any())
             {
                 return NotFound();
             }
 
-            return Ok(repositories);
+            return Ok(new PaginatedResponse<RepositoryDto>(repositories));
 
         }
 
@@ -109,50 +110,52 @@ namespace GitRepositoryTracker.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Repository>>> GetAllByLanguage(string languageName)
+        public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByLanguage(string languageName, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (string.IsNullOrEmpty(languageName))
             {
                 return BadRequest("Language parameter is required");
             }
-            var repositories = await _uIGenericRepository.GetAllByLanguage(languageName);
+            var repositories = await _uIGenericRepository.GetAllByLanguageAsync(languageName,pageNumber,pageSize);
             if (repositories == null || !repositories.Any())
             {
                 return NotFound();
             }
 
-            return Ok(repositories);
+            return Ok(new PaginatedResponse<RepositoryDto>(repositories));
 
         }
 
         [HttpGet("all-topics")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllTopics()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PaginatedResponse<TopicDto>>> GetAllTopics([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
-            var topics = await _uIGenericRepository.GetAllTopicsAsync();
+            var topics = await _uIGenericRepository.GetAllTopicsAsync(pageNumber,pageSize);
             if (topics == null || !topics.Any())
             {
                 return NotFound();
             }
 
-            return Ok(topics);
+            return Ok(new PaginatedResponse<TopicDto>(topics));
         }
 
         [HttpGet("all-languages")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllLanguages()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PaginatedResponse<LanguageDto>>> GetAllLanguages([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
-            var languages = await _uIGenericRepository.GetAllLanguagesAsync();
+            var languages = await _uIGenericRepository.GetAllLanguagesAsync(pageNumber, pageSize);
             if (languages == null || !languages.Any())
             {
                 return NotFound();
             }
 
-            return Ok(languages);
+            return Ok(new PaginatedResponse<LanguageDto>(languages));
         }
     }
 }

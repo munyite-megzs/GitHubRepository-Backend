@@ -23,51 +23,9 @@ namespace GitRepositoryTracker.Controllers
             _repositoryDeserializer = repositoryDeserializer;
         }
 
-        //[HttpPost("create_repository")]
-        //public async Task<ActionResult> AddRepository(RepositoryDto repositoryDto)
-        //{
-        //    if (repositoryDto == null)
-        //    {
-        //        return BadRequest("No repository provided");
-        //    }
-
-        //    var repository = _mapper.Map<Repository>(repositoryDto);
-
-        //    await _gitAPIRepository.AddRepository(repository);
-
-        //    return Ok(repository.RepositoryId);
-        //}
-        [HttpPost("create_topic")]
-        public async Task<ActionResult> AddTopic(TopicDto topicDto)
-        {
-
-            if (topicDto == null)
-            {
-                return BadRequest("No topic provided");
-            }
-            var topic = _mapper.Map<Topic>(topicDto);
-
-            await _gitAPIRepository.AddTopic(topic);
-
-            return Ok(topic.TopicId);
-        }
-
-
-        //[HttpPost("add_repositories")]
-        //public async Task<ActionResult> AddRepositories(IEnumerable<RepositoryDto> repositoryDtos)
-        //{
-        //    if (repositoryDtos == null || !repositoryDtos.Any())
-        //    {
-        //        return BadRequest("No repositories provided");
-        //    }
-        //    var repositories = _mapper.Map<IEnumerable<Repository>>(repositoryDtos);
-
-        //    await _gitAPIRepository.AddRepositories(repositories);
-
-        //    return Ok();
-        //}
-
         [HttpPost("add_topics")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> AddTopics(IEnumerable<TopicDto> topicDtos)
         {
             if (topicDtos == null || !topicDtos.Any())
@@ -97,7 +55,7 @@ namespace GitRepositoryTracker.Controllers
         }
 
         [HttpGet("gettopic/{id}")]
-        public async Task<ActionResult<RepositoryDto>> GetTopicById(int id)
+        public async Task<ActionResult<TopicDto>> GetTopicById(int id)
         {
             var topic = await _gitAPIRepository.GetTopicById(id);
 
@@ -111,6 +69,8 @@ namespace GitRepositoryTracker.Controllers
         }
 
         [HttpPost("repositories")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddRepositories(int size, int page, int perPage)
         {
 
