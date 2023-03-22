@@ -7,29 +7,14 @@ namespace GitRepositoryTracker.Services
     public class GitHubAPIService : IGitHubAPIService
     {
 
-        private readonly IGitHubClient _gitHubClient;
-        private readonly IConfiguration _configuration;
+        private readonly IGitHubClient _gitHubClient;        
         private readonly ILogger _logger;
 
         public GitHubAPIService(ILogger<GitHubAPIService> logger, IGitHubClient gitHubClient)
         {
             _gitHubClient = gitHubClient;
-            _logger = logger;
-            //var productInfo = new ProductHeaderValue("GitRepoTracker");
-            //var accessToken = GetAccessToken();
-            //var credentials = new Credentials(accessToken);
-            //_gitHubClient = new GitHubClient(productInfo)
-            //{
-            //    Credentials = credentials
-            //};   
-
-
         }
-        //public string GetAccessToken()
-        //{
-        //    var accessToken = _configuration.GetValue<string>("GitHubAccessToken");
-        //    return accessToken;
-        //}    
+    
         public async Task<IEnumerable<Octokit.Repository>> GetAllRepositoriesBySize(int size, int page, int perPage)
         {
 
