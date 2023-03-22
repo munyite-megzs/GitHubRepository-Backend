@@ -1,0 +1,13 @@
+﻿using GitRepositoryTracker.Models;
+
+namespace GitRepositoryTracker.Interfaces
+{
+    public interface IGitAPIRepository
+    {
+        Task AddRepository(Repository repository);
+        Task AddTopic(Topic topic);
+        Task Addtopics(IEnumerable<Topic> topics);
+        Task AddRepositories(IEnumerable<Repository> repositories);
+
+    }
+}
