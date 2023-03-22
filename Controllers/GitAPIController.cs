@@ -2,6 +2,7 @@
 using GitRepositoryTracker.DTO;
 using GitRepositoryTracker.Interfaces;
 using GitRepositoryTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GitRepositoryTracker.Controllers
@@ -23,9 +24,12 @@ namespace GitRepositoryTracker.Controllers
             _repositoryDeserializer = repositoryDeserializer;
         }
 
+        [Authorize]
         [HttpPost("add_topics")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> AddTopics(IEnumerable<TopicDto> topicDtos)
         {
             if (topicDtos == null || !topicDtos.Any())
@@ -40,7 +44,12 @@ namespace GitRepositoryTracker.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpGet("repository/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<RepositoryDto>> GetRepositoryById(string id)
         {
             var repository = await _gitAPIRepository.GetRepositoryById(id);
@@ -54,7 +63,12 @@ namespace GitRepositoryTracker.Controllers
             return Ok(repositoryDto);
         }
 
+        [Authorize]
         [HttpGet("gettopic/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<TopicDto>> GetTopicById(int id)
         {
             var topic = await _gitAPIRepository.GetTopicById(id);
@@ -68,9 +82,12 @@ namespace GitRepositoryTracker.Controllers
             return Ok(topicDto);
         }
 
+        [Authorize]
         [HttpPost("repositories")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]      
+        [ProducesResponseType(StatusCodes.Status404NotFound)]        
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddRepositories(int size, int page, int perPage)
         {
 
