@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GitRepositoryTracker.Controllers
 {
     [ApiController]
-    [Route("api/GitRepoTrackerAPI")]
+    [Route("api/[controller]")]
     public class GitAPIController : ControllerBase
     {
         private readonly IGitAPIRepository _gitAPIRepository;
