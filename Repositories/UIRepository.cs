@@ -1,6 +1,9 @@
-﻿using GitRepositoryTracker.DButil;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using GitRepositoryTracker.DButil;
+using GitRepositoryTracker.DTO;
 using GitRepositoryTracker.Interfaces;
-using GitRepositoryTracker.Models;
+using GitRepositoryTracker.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace GitRepositoryTracker.Repositories
@@ -8,60 +11,80 @@ namespace GitRepositoryTracker.Repositories
     public class UIRepository : IUIGenericRepository
     {
         private readonly GitRepoContext _context;
-
-        public UIRepository(GitRepoContext gitRepoContext)
+        private readonly IMapper _mapper;
+        public UIRepository(GitRepoContext gitRepoContext, IMapper mapper)
         {
             _context = gitRepoContext;
+            _mapper = mapper;
         }
-        public async Task<IEnumerable<Repository>> GetAllByDate()
+        public async Task<PagedList<RepositoryDto>> GetAllByDateAsync(int pageNumber, int pageSize)
         {
-            var result = await _context.Repositories               
-                .ToListAsync();
-            return result.OrderByDescending(rep=> rep.UpdatedAt);
+            var repositories = _context.Repositories
+                .ProjectTo<RepositoryDto>(_mapper.ConfigurationProvider)
+                .OrderByDescending(rep => rep.UpdatedAt);              
+
+            return await PagedList<RepositoryDto>.CreateAsync(repositories,pageNumber,pageSize);
+        } 
+
+        public async Task<PagedList<RepositoryDto>> GetAllByForksAsync(int pageNumber, int pageSize)
+        {
+            var repositories =_context.Repositories
+                .ProjectTo<RepositoryDto>(_mapper.ConfigurationProvider)
+                .OrderByDescending(rep => rep.StargazersCount);
+            return await PagedList<RepositoryDto>.CreateAsync(repositories, pageNumber, pageSize);
         }
 
-        public async Task<IEnumerable<Repository>> GetAllByForks()
+        public async Task<PagedList<RepositoryDto>> GetAllByLanguageAsync(string language, int pageNumber, int pageSize)
         {
-            var result = await _context.Repositories                
-                .ToListAsync();
-            return result.OrderByDescending(rep => rep.ForksCount);
+            var repositories =_context.Repositories
+                .Include(l => l.Language)
+                .Where(rep => rep.Language.LanguageName == language)
+                .ProjectTo<RepositoryDto>(_mapper.ConfigurationProvider);
+
+            return await PagedList<RepositoryDto>.CreateAsync(repositories, pageNumber,pageSize);
         }
 
-        public async Task<IEnumerable<Repository>> GetAllByLanguage(string language)
+        public async Task<PagedList<RepositoryDto>> GetAllByStarsAsync(int pageNumber, int pageSize)
         {
-            var result = await _context.Repositories
-                .Where(rep => rep.language == language)
-                .ToListAsync();
-            return result;
+            var repositories = _context.Repositories
+                .ProjectTo<RepositoryDto>(_mapper.ConfigurationProvider)
+                .OrderByDescending(rep => rep.StargazersCount);
+
+            return await PagedList<RepositoryDto>.CreateAsync(repositories, pageNumber, pageSize);
         }
 
-        public async Task<IEnumerable<Repository>> GetAllByStars()
+        public async Task<PagedList<RepositoryDto>> GetAllByTopicAsync(string topicName, int pageNumber, int pageSize)
         {
-            var result = await _context.Repositories          
-                .ToListAsync();
-            return result.OrderByDescending(rep => rep.StargazersCount);
-        }
-
-        public async Task<IEnumerable<Repository>> GetAllByTopic(string topicName)
-        {
-            var repositories = await _context.Repositories
+            var repositories = _context.Repositories
                 .Include(r => r.RepositoryTopics)
                 .ThenInclude(rt => rt.Topic)
                 .Where(r => r.RepositoryTopics.Any(rt => rt.Topic.TopicName == topicName))
-                .ToListAsync();
+                .ProjectTo<RepositoryDto>(_mapper.ConfigurationProvider);
 
-            return repositories;
-        }
+            return await PagedList<RepositoryDto>.CreateAsync(repositories, pageNumber, pageSize);
+        }      
 
-        public async Task<IEnumerable<Repository>> GetAllRepositories()
+        public async Task<PagedList<LanguageDto>> GetAllLanguagesAsync(int pageNumber, int pageSize)
         {
-            var repositories = await _context.Repositories.ToListAsync();
-            return repositories;
-        }
+            var languages = _context.Languages
+                .ProjectTo<LanguageDto>(_mapper.ConfigurationProvider);
 
-        public async Task<IEnumerable<Topic>> GetAllTopicsAsync()
+            return await PagedList<LanguageDto>.CreateAsync(languages, pageNumber, pageSize);
+        }     
+
+        public async Task<PagedList<TopicDto>> GetAllTopicsAsync(int pageNumber, int pageSize)
         {
-            return await _context.Topics.ToListAsync();
+            var topics = _context.Topics
+                  .ProjectTo<TopicDto>(_mapper.ConfigurationProvider);
+            return await PagedList<TopicDto>.CreateAsync(topics, pageNumber, pageSize);
+        }
+        public async Task<PagedList<RepositoryDto>> GetAllRepositoriesAsync(int pageNumber, int pageSize)
+        {
+            var repositories = _context.Repositories
+                .ProjectTo<RepositoryDto>(_mapper.ConfigurationProvider);
+
+            return await PagedList<RepositoryDto>.CreateAsync(repositories, pageNumber, pageSize);  
+
         }
     }
 }

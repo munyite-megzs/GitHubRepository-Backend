@@ -4,13 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GitRepositoryTracker.DButil
 {
-    public class GitRepoContext:DbContext
+    public class GitRepoContext : DbContext
     {
-        public DbSet<Repository> Repositories { get; set; } 
-        public DbSet<Topic> Topics { get; set; } 
+        public DbSet<Repository> Repositories { get; set; }
+        public DbSet<Topic> Topics { get; set; }
+        public DbSet<Language> Languages { get; set; }
         public DbSet<RepositoryTopic> RepositoryTopics { get; set; }
 
-    
+
         public GitRepoContext(DbContextOptions<GitRepoContext> options)
            : base(options)
         {
@@ -19,7 +20,7 @@ namespace GitRepositoryTracker.DButil
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RepositoryTopic>()
-                .HasKey(rt => new {rt.RepositoryId, rt.TopicId});
+                .HasKey(rt => new { rt.RepositoryId, rt.TopicId });
 
             modelBuilder.Entity<RepositoryTopic>()
                 .HasOne<Repository>(rt => rt.Repository)
@@ -42,19 +43,22 @@ namespace GitRepositoryTracker.DButil
             modelBuilder.Entity<Topic>()
                 .HasIndex(t => t.TopicName)
                 .IsUnique();
+            modelBuilder.Entity<Repository>()
+                .HasOne(r => r.Language)
+                .WithMany(l => l.Repositories)
+                .HasForeignKey(r => r.LanguageId);
+            modelBuilder.Entity<Language>()
+                .Property(l => l.LanguageId)
+                .ValueGeneratedOnAdd();
 
-            //seeddata
-            modelBuilder.Seed();
+    
 
             base.OnModelCreating(modelBuilder);
 
 
         }
-    //    public void Initialize()
-    //    {
-    //        SeedData.Initialize(this);
-    //    }
+
     }
 
-   
+
 }
