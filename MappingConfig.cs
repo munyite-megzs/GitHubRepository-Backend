@@ -21,6 +21,7 @@ namespace GitRepositoryTracker
             CreateMap<Octokit.Repository, RepositoryDto>()
                 .ForMember(dest => dest.RepositoryId, opt => opt.MapFrom(src => src.NodeId))
                 .ForMember(dest => dest.RepositoryName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Url,opt => opt.MapFrom(src=> src.HtmlUrl))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt.UtcDateTime))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt.UtcDateTime))
                 .ForMember(dest => dest.Language, opt => opt.MapFrom(src => new LanguageDto { LanguageName = src.Language ?? "None" }));
