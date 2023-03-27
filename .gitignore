@@ -363,5 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 /Migrations/
+/Migrations/GitRepoContextModelSnapshot.cs
 /appsettings.json
-

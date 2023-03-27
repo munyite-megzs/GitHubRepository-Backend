@@ -1,10 +1,12 @@
 ﻿using GitRepositoryTracker.Data;
 using GitRepositoryTracker.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GitRepositoryTracker.DButil
 {
-    public class GitRepoContext : DbContext
+    public class GitRepoContext : IdentityUserContext<IdentityUser>
     {
         public DbSet<Repository> Repositories { get; set; }
         public DbSet<Topic> Topics { get; set; }
@@ -19,6 +21,7 @@ namespace GitRepositoryTracker.DButil
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<RepositoryTopic>()
                 .HasKey(rt => new { rt.RepositoryId, rt.TopicId });
 
@@ -50,11 +53,6 @@ namespace GitRepositoryTracker.DButil
             modelBuilder.Entity<Language>()
                 .Property(l => l.LanguageId)
                 .ValueGeneratedOnAdd();
-
-    
-
-            base.OnModelCreating(modelBuilder);
-
 
         }
 

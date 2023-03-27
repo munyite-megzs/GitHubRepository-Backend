@@ -2,12 +2,13 @@
 using GitRepositoryTracker.DTO;
 using GitRepositoryTracker.Interfaces;
 using GitRepositoryTracker.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GitRepositoryTracker.Controllers
 {
     [ApiController]
-    [Route("api/GitRepoTrackerAPI")]
+    [Route("api/[controller]")]
     public class UIController : ControllerBase
     {
         private readonly IUIGenericRepository _uIGenericRepository;
@@ -19,11 +20,12 @@ namespace GitRepositoryTracker.Controllers
             _mapper = mapper;
         }
 
-
+        [Authorize]
         [HttpGet("all-repositories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllRepostories([FromQuery]int pageNumber=1, [FromQuery]int pageSize=10)
         {
 
@@ -36,10 +38,12 @@ namespace GitRepositoryTracker.Controllers
             return Ok(new PaginatedResponse<RepositoryDto>(repositories));
         }
 
+        [Authorize]
         [HttpGet("by-updated-at")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByUpdatedAt([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
@@ -52,11 +56,12 @@ namespace GitRepositoryTracker.Controllers
             return Ok(new PaginatedResponse<RepositoryDto>(repositories));
         }
 
-
+        [Authorize]
         [HttpGet("topic/{topicName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByTopic(string topicName, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (string.IsNullOrEmpty(topicName))
@@ -73,10 +78,12 @@ namespace GitRepositoryTracker.Controllers
             return Ok(new PaginatedResponse<RepositoryDto>(repositories));
         }
 
+        [Authorize]
         [HttpGet("by-forks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByNumberOfForks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
@@ -88,11 +95,14 @@ namespace GitRepositoryTracker.Controllers
 
             return Ok(new PaginatedResponse<RepositoryDto>(repositories));
 
-        }  
+        }
 
+        [Authorize]
         [HttpGet("by-stars")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByNumberOfStars([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
@@ -106,10 +116,12 @@ namespace GitRepositoryTracker.Controllers
 
         }
 
+        [Authorize]
         [HttpGet("language/{languageName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<RepositoryDto>>> GetAllByLanguage(string languageName, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (string.IsNullOrEmpty(languageName))
@@ -126,10 +138,12 @@ namespace GitRepositoryTracker.Controllers
 
         }
 
+        [Authorize]
         [HttpGet("all-topics")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<TopicDto>>> GetAllTopics([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
@@ -142,10 +156,12 @@ namespace GitRepositoryTracker.Controllers
             return Ok(new PaginatedResponse<TopicDto>(topics));
         }
 
+        [Authorize]
         [HttpGet("all-languages")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PaginatedResponse<LanguageDto>>> GetAllLanguages([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
 
