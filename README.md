@@ -12,6 +12,18 @@ Follow these steps to get the code up and running on your system:
 .NET 6.0 or higher
 SQL Server (for the database)
 
+# Configuration settings
+Make sure to update the following settings in the appsettings.json file according to your environment:
+
+* **ConnectionStrings:DefaultConnection** - Update with your database connection string.
+* **GithubSettings:GitHubAccessToken** - Provide your GitHub Personal Access Token.
+* **Jwt:Key, Jwt:Issuer, Jwt:Audience** - Update with appropriate values for JWT authentication.
+* **GitHubDataFetcherSettings:** Settings for the scheduled service to fetch repositories from github
+    * **Size**: Repository size in KBs
+    * **Page**: Number of pages to be returned
+    * **PerPage**: Number of items per page
+    * **FetchIntervalInMinutes**: Periodic interval in hours
+
 # Latest releases
 Check the [releases](https://dev.azure.com/MicrosoftLeapClassroom/GitRepositoryTracker/_release) page for the latest version of the application.
 
