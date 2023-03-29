@@ -10,8 +10,7 @@ namespace GitRepositoryTracker.Services
 {
     public class JwtService: IJwtService
     {
-        private const int EXPIRATION_MINUTES = 5;
-
+        private const int EXPIRATION_MINUTES = 300;
         private readonly IConfiguration _configuration;
 
         public JwtService(IConfiguration configuration)
