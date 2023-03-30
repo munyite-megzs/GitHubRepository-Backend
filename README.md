@@ -29,8 +29,7 @@ Visual Studio 2022
 
 # Configuration settings
 
-Make sure to update the following settings in the [appsettings.json](./appsettings.json) file according to your environment:
-
+Make sure to update the following settings in the [`appsettings.json`](appsettings.json) file according to your environment:
 
 - **ConnectionStrings:DefaultConnection** - Update with your database connection string.
 - **GithubSettings:GitHubAccessToken** - Provide your GitHub Personal Access Token.
