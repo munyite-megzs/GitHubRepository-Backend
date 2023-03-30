@@ -24,6 +24,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 // Add API explorer and Swagger.
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "GitHubRepositoryTracker", Version = "v1" });
@@ -56,6 +57,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // Add hosted services and AutoMapper.
 builder.Services.AddHostedService<GitHubDataFetcher>();
+
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 // Configure database connection.
@@ -84,13 +86,18 @@ builder.Services.AddScoped<IGitHubClient>(provider =>
 
 // Register repositories and services.
 builder.Services.AddScoped<IUIGenericRepository, UIRepository>();
+
 builder.Services.AddScoped<IGitHubAPIService, GitHubAPIService>();
+
 builder.Services.AddScoped<IRepositoryDeserializer, RepositoryDeserializer>();
+
 builder.Services.AddScoped<IGitAPIRepository, GitAPIRepository>();
+
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Configure caching and Identity.
 builder.Services.AddScoped<IMemoryCache, MemoryCache>();
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -99,7 +106,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
+    options.Password.RequireLowercase = true;  
 
 })
     .AddEntityFrameworkStores<GitRepoContext>()
@@ -129,6 +136,7 @@ var app = builder.Build();
 
 // Configure Swagger and Swagger UI.
 app.UseSwagger();
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "GitHubRepositoryTracker v1");
@@ -139,9 +147,11 @@ app.UseHttpsRedirection();
 
 // Configure authentication and authorization.
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 // Map controllers and run the application.
 app.MapControllers();
+
 app.Run();
 
