@@ -50,8 +50,9 @@ namespace GitRepositoryTracker.Services
 
             var cacheKey = $"RepoSearch:{searchRequest.Size}:{searchRequest.Page}:{searchRequest.PerPage}:{searchRequest.SortField}";
 
+            SearchRepositoryResult searchResult;
             // Try to get the search result from the cache
-            if (!_memoryCache.TryGetValue(cacheKey, out SearchRepositoryResult searchResult))
+            if (!_memoryCache.TryGetValue(cacheKey, out searchResult))
             {
                 // If the result is not in the cache, execute the search request with the retry policy
                 searchResult = await retryPolicy.ExecuteAsync(async () => await _gitHubClient.Search.SearchRepo(searchRequest));
