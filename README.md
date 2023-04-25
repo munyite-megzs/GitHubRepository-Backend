@@ -18,7 +18,7 @@ Follow these steps to get the code up and running on your system:
 
 # Installation process
 
-1. Clone the repository using git clone [repository-url](https://MicrosoftLeapClassroom@dev.azure.com/MicrosoftLeapClassroom/GitRepositoryTracker/_git/GitRepositoryTracker-BackEnd)
+1. Clone the repository using git clone [repository-url](https://github.com/FacultyUpskillingOrg/GitHubRepository-Backend.git)
 2. Navigate to the project folder and open the solution file in Visual Studio.
 
 # Software dependencies
@@ -46,6 +46,9 @@ Make sure to update the following settings in the [`appsettings.json`](appsettin
   - **Page**: Number of pages to be returned
   - **PerPage**: Number of items per page
   - **FetchIntervalInHours**: Periodic interval in hours
+-**NOTE** :The above settings are used to fetch the repositories from GitHub API. The default values are set to fetch 100 repositories with size greater than 100KBs. The periodic interval is set to 24 hours. You can change these values according to your requirements.
+The settings are to be used for local testing, ensure you set the appropriate values in the Azure App Service configuration settings when deploying the application.
+Do not push the secrets to the repository.
 
 # Latest releases
 
