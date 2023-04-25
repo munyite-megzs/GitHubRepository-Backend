@@ -63,6 +63,9 @@ Refer to the [GitHub API documentation](https://docs.github.com/en/rest?apiVersi
 4. Run the tests by navigating to Test > Run All Tests.
 5. To run the application, press F5 or click Debug > Start Debugging.
 
+# License
+ Code is Licensed under the MIT License. See [MIT LICENSE](https://github.com/FacultyUpskillingOrg/GitHubRepository-Backend/blob/main/LICENSE) for more details.
+
 # Contribute
 
 We welcome contributions from the community to make this code better. If you'd like to contribute, please follow these steps:
