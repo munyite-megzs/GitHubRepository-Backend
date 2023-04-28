@@ -12,17 +12,12 @@ namespace GitRepositoryTracker.Repositories
     {
         private readonly GitRepoContext _context;
         private readonly IMapper _mapper;
-        //private readonly ILogger _logger;
 
         public GitAPIRepository(GitRepoContext gitRepoContext, IMapper mapper)
         {
             _context = gitRepoContext;
             _mapper = mapper;
-            // _logger = logger;
         }
-
-
-
         public async Task AddTopic(Topic topic)
         {
             await _context.AddAsync(topic);
@@ -35,94 +30,97 @@ namespace GitRepositoryTracker.Repositories
             await _context.SaveChangesAsync();
         }
         public async Task AddRepositories(IEnumerable<Octokit.Repository> repositories)
-        {       
-
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
+        {
+            var executionStrategy = _context.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () =>
             {
-                foreach (var repository in repositories)
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                try
                 {
-                    var repodto = _mapper.Map<RepositoryDto>(repository);
-                    var repoentity = _mapper.Map<Models.Repository>(repodto);
-
-                    var repoInDb = await _context.Repositories.FirstOrDefaultAsync(r => r.RepositoryId == repoentity.RepositoryId);
-
-                    if (repoInDb != null)
+                    foreach (var repository in repositories)
                     {
-                        // Repository already exists, skip it
-                        continue;
-                    }
+                        var repodto = _mapper.Map<RepositoryDto>(repository);
+                        var repoentity = _mapper.Map<Models.Repository>(repodto);
 
-                    // Add new language to database
-                    var languageName = repository.Language ?? "None";
-                    var languageEntity = await _context.Languages
-                        .FirstOrDefaultAsync(l => l.LanguageName == languageName);
+                        var repoInDb = await _context.Repositories.FirstOrDefaultAsync(r => r.RepositoryId == repoentity.RepositoryId);
 
-                    if (languageEntity == null)
-                    {
-                        languageEntity = new Language
+                        if (repoInDb != null)
                         {
-                            LanguageName = languageName
-                        };
-
-                        _context.Languages.Add(languageEntity);
-                        await _context.SaveChangesAsync();
-                    }
-
-                    repoentity.Language = languageEntity;
-
-                    // Add new repository to database
-                    _context.Repositories.Add(repoentity);
-                    await _context.SaveChangesAsync();
-
-                    // Add topics to database
-                    var topicDtos = repository.Topics?.Select(topic => topic ?? "None")
-                        .Select(topic => new TopicDto { TopicName = topic })
-                        .Distinct().ToList();
-                    var topicEntities = _mapper.Map<IEnumerable<Topic>>(topicDtos);
-
-                    foreach (var topicEntity in topicEntities)
-                    {
-                        var existingTopic = await _context.Topics
-                            .FirstOrDefaultAsync(t => t.TopicName == topicEntity.TopicName);
-
-                        if (existingTopic != null)
-                        {
-                            topicEntity.TopicId = existingTopic.TopicId;
+                            // Repository already exists, skip it
+                            continue;
                         }
-                        else
+
+                        // Add new language to database
+                        var languageName = repository.Language ?? "None";
+                        var languageEntity = await _context.Languages
+                            .FirstOrDefaultAsync(l => l.LanguageName == languageName);
+
+                        if (languageEntity == null)
                         {
-                            _context.Topics.Add(topicEntity);
+                            languageEntity = new Language
+                            {
+                                LanguageName = languageName
+                            };
+
+                            _context.Languages.Add(languageEntity);
                             await _context.SaveChangesAsync();
                         }
 
-                        var existingRepositoryTopic = await _context.RepositoryTopics
-                            .FirstOrDefaultAsync(rt => rt.TopicId == topicEntity.TopicId && rt.RepositoryId == repoentity.RepositoryId);
+                        repoentity.Language = languageEntity;
 
-                        if (existingRepositoryTopic == null)
+                        // Add new repository to database
+                        _context.Repositories.Add(repoentity);
+                        await _context.SaveChangesAsync();
+
+                        // Add topics to database
+                        var topicDtos = repository.Topics?.Select(topic => topic ?? "None")
+                            .Select(topic => new TopicDto { TopicName = topic })
+                            .Distinct().ToList();
+                        var topicEntities = _mapper.Map<IEnumerable<Topic>>(topicDtos);
+
+                        foreach (var topicEntity in topicEntities)
                         {
-                            var repositoryTopicentity = new RepositoryTopic
-                            {
-                                RepositoryId = repoentity.RepositoryId,
-                                TopicId = topicEntity.TopicId,
-                            };
+                            var existingTopic = await _context.Topics
+                                .FirstOrDefaultAsync(t => t.TopicName == topicEntity.TopicName);
 
-                            _context.RepositoryTopics.Add(repositoryTopicentity);
+                            if (existingTopic != null)
+                            {
+                                topicEntity.TopicId = existingTopic.TopicId;
+                            }
+                            else
+                            {
+                                _context.Topics.Add(topicEntity);
+                                await _context.SaveChangesAsync();
+                            }
+
+                            var existingRepositoryTopic = await _context.RepositoryTopics
+                                .FirstOrDefaultAsync(rt => rt.TopicId == topicEntity.TopicId && rt.RepositoryId == repoentity.RepositoryId);
+
+                            if (existingRepositoryTopic == null)
+                            {
+                                var repositoryTopicentity = new RepositoryTopic
+                                {
+                                    RepositoryId = repoentity.RepositoryId,
+                                    TopicId = topicEntity.TopicId,
+                                };
+
+                                _context.RepositoryTopics.Add(repositoryTopicentity);
+                            }
                         }
+
+                        await _context.SaveChangesAsync();
                     }
 
-                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
                 }
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                Debug.WriteLine("An error occurred while adding repositories to the database.", ex.Message);
-                throw;
-            }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    Debug.WriteLine("An error occurred while adding repositories to the database.", ex.Message);
+                    throw;
+                }
+            });
         }
 
         public async Task<Models.Repository> GetRepositoryById(string id)
